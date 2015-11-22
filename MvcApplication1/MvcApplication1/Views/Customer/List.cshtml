@@ -1,0 +1,157 @@
+﻿<div class="page-header">
+    <h1>Customer List</h1>
+</div>
+
+<div ng-controller="CustomerController">
+    <div window-observer notifier="onWindowResize()"></div>
+
+    <div id="filterPanelContainer">
+        <uib-accordion>
+            <uib-accordion-group heading="Filter Form" is-open="true">
+                <uib-alert dismiss-on-timeout="3500" close="closeAlert()" uib-collapse="isClosedAlert">
+                    <strong>Hint:</strong> You can close this panel clicking on it's header.
+                </uib-alert>
+                <form name="customerFilterForm">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label for="name" class="control-label col-sm-2">
+                                Name
+                            </label>
+
+                            <div class="col-sm-6">
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Name"
+                                       ng-model="customerFilter.name" />
+                            </div>
+
+                            <label for="gender" class="control-label col-sm-1">
+                                Gender
+                            </label>
+
+                            <div class="col-sm-3">
+                                <select class="form-control" id="gender" ng-model="customerFilter.gender">
+                                    <option value="">Indifferent</option>
+                                    <option>F</option>
+                                    <option>M</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city" class="control-label col-sm-2">
+                                City
+                            </label>
+
+                            <div class="col-sm-4">
+                                <ui-select multiple ng-model="customerFilter.city" theme="bootstrap" ng-change="filterRegion()">
+                                    <ui-select-match placeholder="Select a city">
+                                        {{ $item.CityName }}
+                                    </ui-select-match>
+
+                                    <ui-select-choices repeat="city in cityList | propsFilter: { CityName: $select.search }">
+                                        <div ng-bind-html="city.CityName | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+
+                            <label for="" class="control-label col-sm-2">
+                                Region
+                            </label>
+
+                            <div class="col-sm-4">
+                                <ui-select multiple ng-model="customerFilter.region" theme="bootstrap">
+                                    <ui-select-match placeholder="Select a region">
+                                        {{ $item.RegionName }}
+                                    </ui-select-match>
+
+                                    <ui-select-choices repeat="region in regionFilterList | propsFilter: { RegionName: $select.search }">
+                                        <div ng-bind-html="region.RegionName | highlight: $select.search"></div>
+                                        <small>
+                                            {{ city.RegionName }}
+                                        </small>
+                                    </ui-select-choices>
+                                </ui-select>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastPurchaseBeginDateInput" class="control-label col-sm-2">
+                                Last Purchase
+                            </label>
+
+                            <div class="col-sm-4">
+                                <input type="text" id="lastPurchaseBeginDateInput" ng-model="customerFilter.lastPurchaseFrom"
+                                       class="form-control" placeholder="DD/MM/YYYY" ui-mask="99/99/9999" ng-change="validateDateFilter()" />
+                            </div>
+
+                            <label for="lastPurchaseBeginDate" class="control-label col-sm-2">
+                                Until
+                            </label>
+
+                            <div class="col-sm-4">
+                                <input type="text" id="lastPurchaseFinalDate" ng-model="customerFilter.lastPurchaseTo"
+                                       class="form-control" placeholder="DD/MM/YYYY" ui-mask="99/99/9999" ng-change="validateDateFilter()" />
+                            </div>
+
+                            <div ng-if="isUsingDateFilter && !isValidDateFilter"
+                                 class="col-sm-12 text-danger text-right">
+                                Avoiding date filter due inconsistency.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="" class="control-label col-sm-2">
+                                Classification
+                            </label>
+
+                            <div class="col-sm-4">
+                                <ui-select multiple ng-model="customerFilter.classification" theme="bootstrap">
+                                    <ui-select-match placeholder="Select a classification">
+                                        {{ $item.ClassificationName }}
+                                    </ui-select-match>
+
+                                    <ui-select-choices repeat="classification in classificationList | propsFilter: { ClassificationName: $select.search }">
+                                        <div ng-bind-html="classification.ClassificationName | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+
+                            <label ng-if="isAdmin" for="" class="control-label col-sm-2">
+                                Seller
+                            </label>
+
+                            <div ng-if="isAdmin" class="col-sm-4">
+                                <ui-select multiple ng-model="customerFilter.seller" theme="bootstrap">
+                                    <ui-select-match placeholder="Select a seller">
+                                        {{ $item.Name }}
+                                    </ui-select-match>
+
+                                    <ui-select-choices repeat="seller in sellerList | propsFilter: { Name: $select.search }">
+                                        <div ng-bind-html="seller.Name | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2 col-sm-offset-8">
+                                <button type="button" class="btn btn-default btn-block" ng-click="clearFields()">
+                                    Clear fields
+                                </button>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" class="btn btn-primary btn-block" ng-click="search()">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>                              
+            </uib-accordion-group>
+        </uib-accordion>
+    </div>
+
+    <div class="grid-container col-sm-12">
+        <div ag-grid="gridOptions" class="ag-blue" style="height: 450px;"></div>
+    </div>
+</div>
